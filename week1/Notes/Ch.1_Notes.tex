@@ -1,0 +1,230 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}	% Para caracteres en español
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{multirow,booktabs}
+\usepackage[table]{xcolor}
+\usepackage{fullpage}
+\usepackage{lastpage}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{cool}
+\usepackage{mathrsfs}
+\usepackage{wrapfig}
+\usepackage{setspace}
+\usepackage{calc}
+\usepackage{multicol}
+\usepackage{cancel}
+\usepackage{mathtools}
+\usepackage[retainorgcmds]{IEEEtrantools}
+\usepackage[margin=3cm]{geometry}
+\usepackage{amsmath}
+\newlength{\tabcont}
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.05in}
+\usepackage{empheq}
+\usepackage{framed}
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\colorlet{shadecolor}{orange!15}
+\parindent 0in
+\parskip 12pt
+\geometry{margin=1in, headsep=0.25in}
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}
+\newtheorem{reg}{Rule}
+\newtheorem{exer}{Exercise}
+\newtheorem{note}{Note}
+\begin{document}
+\setcounter{section}{0}
+\title{Chapter 1 Review Notes}
+
+\thispagestyle{empty}
+
+\begin{center}
+{\LARGE \bf Chapter 1 Notes}\\
+
+{\large Finite Difference Methods for ODE \& PDE}\\
+June 2022
+\end{center}
+
+\section{Finite Difference Approximations}
+
+Given a function f(t), its derivative f $^\prime$(t) at t is defined as:
+\begin{equation}
+ \label{exactd}
+ \frac{df}{dt} = \lim_{x \to 0} \frac{f(t + \Delta t)-f(t)}{\Delta t}
+\end{equation}
+
+An approximation of f $^\prime$(t) can be obtained from differenet formulas that are  calculated by using the values of two points, among which are these three:
+\begin{itemize}
+ \item Forward Difference:
+ \begin{equation}
+  \frac{df}{dt} \simeq  \frac{f(t+\Delta t)-f(t)}{\Delta t}
+ \end{equation}
+\begin{center} \includegraphics[scale=0.6]{fd} 
+\end{center}
+With a maximum error of 0.0499815197502347.
+
+ \item Backward Difference:
+ \begin{equation}
+  \frac{df}{dt} \simeq  \frac{f(t)-f(t + \Delta t)}{\Delta t}
+ \end{equation}
+  \begin{center} \includegraphics[scale=0.6]{bd}
+  \end{center}
+ With a maximum error of 0.049967541074577904.
+  
+ \item Central Difference:
+ \begin{equation}
+  \frac{df}{dt} \simeq  \frac{f(t+ \Delta t)-f(t - \Delta t)}{2\Delta t}
+ \end{equation}
+   \begin{center} \includegraphics[scale=0.6]{cd}
+   \end{center}
+\end{itemize}
+With a maximum error of 0.0016658321999396541.\\
+
+
+Clearly, the central approximation is the most accurate one. This will be further illustrated shortly.
+
+Codes can be found here: .
+
+\subsection{Truncation Errors}
+
+{\large \bf Finite Difference Approximation Derivatives with Taylor Series}\\
+
+To analyze the errors in such approximations, each of the function values of f could be expanded in a Taylor series about the point t, e.g., 
+\begin{equation}
+\label{eq5}
+ f(t + \Delta t)= f(t)+f^\prime(t)\Delta t+\frac{1}{2}f^{\prime\prime}(t)\Delta t^2 +\frac{1}{\Factorial{3}} f^{\prime\prime\prime}(t)\Delta t^3 +...
+\end{equation}
+\begin{equation}
+\label{eq6}
+  f(t - \Delta t)= f(t)-f^\prime(t)\Delta t+\frac{1}{2}f^{\prime\prime}(t)\Delta t^2 -\frac{1}{\Factorial{3}} f^{\prime\prime\prime}(t)\Delta t^3 +...
+\end{equation}
+
+Now, we can estimate the error of each of the three previously mentioned formulas. For forward difference approximation, it will look like the following: 
+\begin{equation}
+ f^\prime (t) \simeq \frac{1}{\Delta t}[f^\prime(t)\Delta t+\frac{1}{2}f^{\prime\prime}(t)\Delta t^2 +\frac{1}{\Factorial{3}} f^{\prime\prime\prime}(t)\Delta t^3 +...]
+\end{equation}
+The first term represent what we are actually concerned with, while the second one is the dominating error term. The other terms contribute to the error slightly so they could be negligable.
+
+
+Thus, it could be rewritten as,
+\begin{equation}
+ \frac{df}{dt} \simeq  \frac{f(t+\Delta t)-f(t)}{\Delta t} + O(\Delta t).
+\end{equation}
+
+The same applies for backward difference approximation,
+\begin{equation}
+ \frac{df}{dt} \simeq  \frac{f(t)-f(t+\Delta t)}{\Delta t} + O(\Delta t),
+\end{equation}
+
+where $O(\Delta t)$ describes the accuracy of this approximation. If a certain approximation has the term $O(\Delta t ^p)$, we refer to it as an approximation of p order accuracy. Higher order accuracy is most often better.
+
+For the case of a central difference approximation,
+\begin{equation}
+ f(t+\Delta t)-f(t-\Delta t) = 2f^\prime (t)\Delta t + \frac{2}{\Factorial{3}}f^{\prime\prime\prime}(t)\Delta(t)^3+O(\Delta t^5).
+\end{equation}
+Hence,
+\begin{equation}
+\begin{flalign*}
+    \frac{f(t+ \Delta t)-f(t - \Delta t)}{2\Delta t} & \simeq f^\prime (t)+\frac{1}{\Factorial{3}}f^{\prime\prime\prime}\Delta t^2+... \\
+    & \simeq f^\prime (t) + O(\Delta t^2).
+\end{flalign*}
+\end{equation}
+ 2 is the order of the accuracy of this approximation, which means it is more accurate. 
+ 
+ Next, I will try to get an approximation that is even more accurate. 
+
+ By taking the Taylor series of f around t and computing the series at $t = t_{i-2}, t_{i-1}, t_{i+1}, t_{i+2}$, the approximation of f$^\prime$ ($t_i$) will be:
+ 
+\begin{equation}
+f(t_{i-2}) = f(t_i) - 2hf^\prime(t_i)+\frac{4h^2 f^{\prime\prime}(t_i)}{2}-\frac{8h^3f^{\prime\prime\prime}(t_i)}{6}+\frac{16h^{\prime\prime\prime\prime}(t_i)}{24}-\frac{32h^5 f^{\prime\prime\prime\prime\prime}(t_i)}{120}+...
+\end{equation}
+
+\begin{equation}
+f(t_{i-1}) = f(t_i) - hf^\prime(t_i)+\frac{h^2 f^{\prime\prime}(t_i)}{2}-\frac{h^3f^{\prime\prime\prime}(t_i)}{6}+\frac{h^{\prime\prime\prime\prime}(t_i)}{24}-\frac{h^5 f^{\prime\prime\prime\prime\prime}(t_i)}{120}+...
+\end{equation}
+
+\begin{equation}
+f(t_{i+1}) = f(t_i) + hf^\prime(t_i)+\frac{h^2 f^{\prime\prime}(t_i)}{2}+\frac{h^3f^{\prime\prime\prime}(t_i)}{6}+\frac{h^{\prime\prime\prime\prime}(t_i)}{24}+\frac{h^5 f^{\prime\prime\prime\prime\prime}(t_i)}{120}+...
+\end{equation}
+
+\begin{equation}
+f(t_{i-2}) = f(t_i) + 2hf^\prime(t_i)+\frac{4h^2 f^{\prime\prime}(t_i)}{2}+\frac{8h^3f^{\prime\prime\prime}(t_i)}{6}+\frac{16h^{\prime\prime\prime\prime}(t_i)}{24}+\frac{32h^5 f^{\prime\prime\prime\prime\prime}(t_i)}{120}+...
+\end{equation}
+
+For $h^2, h^3,$ and $h^4$ to cancel out, we can do the following:
+
+\begin{equation}
+ f(t_{i-2})-8f(t_{i-1})+ 8f(t_{i-2})- f(t_{i+2}) = 12hf^\prime(t_i)-\frac{48h^5 f^{\prime\prime\prime\prime\prime}}{120}.
+\end{equation}
+
+It also can be written as,
+
+\begin{equation}
+ f^\prime(t_i) = \frac{f(t_{i-2})-8f(t_{i-1})+ 8f(t_{i-2})- f(t_{i+2})}{12h} + O(h^4).
+\end{equation}
+
+
+\subsection{Deriving finite difference approximations}
+
+\textbf{\large Undetermined Coefficients Method}\\
+\begin{shaded}
+\textbf{Example} 
+
+Detailed solved example can be found \href{https://github.com/Phatimah/Internship-weekly-reports-draft/blob/main/Example1.2.pdf}{here} (Handwritten notes).
+\end{shaded}
+
+\textbf{\large Polynomial Interpolating}\\
+\begin{shaded}
+\textbf{Example} 
+
+Detailed solved example can be found \href{https://github.com/Phatimah/Internship-weekly-reports-draft/blob/main/Examples/Example%201.3.pdf}{here}. (Handwritten notes)
+\end{shaded}
+
+\subsection{Second order derivatives}
+
+From Equ. (\ref{eq5}) and (\ref{eq6}), we try to isolate f$^{\prime\prime}$(t), such that,
+
+\begin{equation}
+ f^{\prime\prime}(t)=\frac{f(t+\Delta t)+f(t-\Delta t)-2f(t)}{\Delta t^2}= f^{\prime\prime}(t)+O(\Delta t^2)
+\end{equation}
+
+\subsection{Higher order derivatives}
+\subsection{A general approach to deriving the coefficients}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
