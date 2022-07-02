@@ -1,0 +1,164 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}	% Para caracteres en español
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{multirow,booktabs}
+\usepackage[table]{xcolor}
+\usepackage{fullpage}
+\usepackage{lastpage}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{cool}
+\usepackage{mathrsfs}
+\usepackage{wrapfig}
+\usepackage{setspace}
+\usepackage{calc}
+\usepackage{multicol}
+\usepackage{cancel}
+\usepackage{mathtools}
+\usepackage[retainorgcmds]{IEEEtrantools}
+\usepackage[margin=3cm]{geometry}
+\usepackage{amsmath}
+\newlength{\tabcont}
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.05in}
+\usepackage{empheq}
+\usepackage{framed}
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\colorlet{shadecolor}{orange!15}
+\parindent 0in
+\parskip 12pt
+\geometry{margin=1in, headsep=0.25in}
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}
+\newtheorem{reg}{Rule}
+\newtheorem{exer}{Exercise}
+\newtheorem{note}{Note}
+
+\begin{document}
+\setcounter{section}{0}
+\title{Chapter 1 Review Notes}
+
+\thispagestyle{empty}
+
+\begin{center}
+{\LARGE \bf Heat Equation}\\
+
+{\large Finite Difference Methods for ODE \& PDE}\\
+June 2022
+\end{center}
+
+\section{Solving the heat equations using Finite Difference Methods (FDMs):}
+
+In the last week, finite difference methods were briefly introduced. Now, I am going to use these methods to approximate the heat equation and then try to do some implementations with Python.
+
+First, recall that:
+
+\begin{itemize}
+ \item {\bf Forward Differences}:
+  \begin{equation}
+  \frac{df}{dt} \simeq  \frac{f(t+\Delta t)-f(t)}{\Delta t}.
+ \end{equation}
+Error: O($\Delta t$)
+ \item {\bf Backward Differences}:
+ \begin{equation}
+  \frac{df}{dt} \simeq  \frac{f(t)-f(t + \Delta t)}{\Delta t}.
+ \end{equation}
+Error: O($\Delta t$)
+ \item {\bf Central Differences}:
+ \begin{equation}
+  \frac{df}{dt} \simeq  \frac{f(t+ \Delta t)-f(t - \Delta t)}{2\Delta t}.
+ \end{equation}
+Error: O($\Delta t^2$)
+ \item {\bf Second Derivative}:
+ \begin{equation}
+ f^{\prime\prime}(t)=\frac{f(t+\Delta t)+f(t-\Delta t)-2f(t)}{\Delta t^2}.
+\end{equation}
+Error: O($\Delta t^2$)
+\end{itemize}
+
+\subsection{Partial Differential Equations and Heat Equation}
+
+The heat equation is a Partial Differential Equation (PDE), e.i., it  has more than one independent variable. Second order PDEs have a general form of:
+\begin{equation}
+ A(x,y)u_{xx}+B(x,y)u_{xy}+C(x,y)u_{yy}=\Phi(x,y,u,u_x,u_y),
+\end{equation}
+where $u_{xx}$ is equivalent to $\frac{\partial^2 u}{\partial x^2}$, and $u_{xy}$  equivalent to $\frac{\partial ^2u}{\partial x \partial y}$, ... etc. I am going to use both notations interchangebly.
+
+Hyperbolic, parabolic, and elliptic PDEs are the three main categories of PDEs. The wave propagation, the time-dependent diffusion processes, and the steady state or equilibrium processes are each represented respectively by one of these PDEs from a physical perspective. The transfer of a physical quantity, such as fluids or waves, is thus modeled by hyperbolic equations. Evolutionary processes that result in a stable state defined by an elliptic equation are described by parabolic issues. Elliptic equations are connected to a certain system state that, in theory, corresponds to the energy minimum.
+
+\begin{itemize}
+\item if $B^2 - 4AC > 0$, then the PDE is hyperbolic.
+\item if $B^2 - 4AC = 0$, then the PDE is parabolic.
+\item if $B^2 - 4AC < 0$, then the PDE is elliptic.
+\end{itemize}
+
+The heat equation, which represents the main concern here, is a parabolic PDE.
+
+\subsubsection{Solving 1D heat equation:}
+
+Consider an isolated heat-conducting rod. The heat equation that governs the tempurature distribution at any time along that rod is:
+\begin{equation}
+ \frac{\partial u}{\partial t} - C \frac{\partial ^2 u}{\partial x^2} = 0.
+\end{equation}
+
+{\bf Initial Conditions:}\\
+$u(x,0)=u^0(x)$.
+
+{\bf Boundary Conditions:}\\
+$u(a,t) = \alpha(t)$.\\
+$u(b,t) = \beta(t)$.
+
+Note that since the boundary conditions are functions of time, this means they will not be chnaging with time. \\
+
+I am in a position now to rewrite the equation in a "decrtized" form by using FDMs, so $x_i = i\Delta x$,
+and $t_k = k\Delta t$. Therefore, $u(x,t)$ can be written as $u_{i}^k$. Accordingly, the approximation of 1D heat equation will have this form,
+
+\begin{equation}
+u_t = \frac{u_{i}^{k+1} -u_i^k}{\Delta t}.
+\end{equation}
+And,
+\begin{equation}
+u_{xx} = \frac{u_{i+1}^{k}+u_{i-1}^k-2u_i^k}{\Delta x^2}.
+\end{equation}
+Hence, 
+\begin{equation}
+\frac{u_{i}^{k+1} -u_i^k}{\Delta t} - C[\frac{u_{i+1}^{k}+u_{i-1}^k-2u_i^k}{\Delta x^2}] = 0.
+\end{equation}
+The total error $= O(\Delta t+\Delta x^2)$.\\
+
+The following equation results from arranging the previous one,
+\begin{equation}
+u_i^{k+1} = \gamma(u_{i+1}^{k}+u_{i-1}^k-2u_i^k) + u_i^k,
+\end{equation}
+where $\gamma = C\frac{\Delta t}{\Delta x^2}$. For simplicity, assume that C = 1. Further, assume that $\frac{\Delta t}{\Delta x^2} = \frac{1}{4}$.
+
+Now, by converting these things into codes we get the following figure,  
+\begin{center} \includegraphics[scale=0.5]{1dhe}
+  \end{center}
+
+  The exact same applies for 2D and 3D, where we can get the following approximations, respectivly, 
+  
+  \begin{equation}
+   \frac{u_{i,j}^{k+1} -u_{i,j}^k}{\Delta t} - C[\frac{u_{i+1,j}^{k}+u_{i-1,j}^k-2u_{i,j}^k}{\Delta x^2}+\frac{u_{i,j+1}^{k}+u_{i,j-1}^k-2u_{i,j}^k}{\Delta y^2}] = 0.
+\end{equation}
+The total error $= O(\Delta t+\Delta x^2+\Delta y^2)$.\\
+
+And finally,
+  \begin{equation}
+   \frac{u_{i,j}^{k+1} -u_{i,j}^k}{\Delta t} - C[\frac{u_{i+1,j,f}^{k}+u_{i-1,j,f}^k-2u_{i,j,f}^k}{\Delta x^2}+\frac{u_{i,j+1,f}^{k}+u_{i,j-1,f}^k-2u_{i,j,f}^k}{\Delta y^2}+\frac{u_{i,j,f+1}^{k}+u_{i,j,f-1}^k-2u_{i,j,f}^k}{\Delta z^2}] = 0.
+\end{equation}
+The total error $= O(\Delta t+\Delta x^2+\Delta y^2+\Delta z^2)$.
+
+
+
+
+
+
+
+
+
+\end{document}
